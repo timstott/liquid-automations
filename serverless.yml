@@ -1,0 +1,27 @@
+service: liquid-automations
+
+frameworkVersion: "=1.19"
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1
+  role: arn:aws:iam::860963740950:role/${self:service}-${opt:stage}-runtime
+  environment:
+    NODE_ENV: ${opt:stage}
+    LOG_LEVEL: info
+  stackTags:
+    project: liquid-automations
+    stage: ${opt:stage}
+  deploymentBucket:
+    name: ${self:service}-${opt:stage}-deployments
+
+functions:
+  helloWorld:
+    handler: src/handlers.helloWorld
+    timeout: 60
+    memorySize: 128
+    events:
+      - schedule:
+          rate: rate(3 minutes)
+          enabled: true
