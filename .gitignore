@@ -25,3 +25,5 @@ tmp/
 .eslintcache
 
 .serverless
+infrastructure/.terraform/
+infrastructure/terraform.tfstate.d/
