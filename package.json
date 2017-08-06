@@ -1,0 +1,30 @@
+{
+  "name": "liquid-automations",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "lodash.find": "^4.6.0",
+    "lodash.floor": "^4.0.4",
+    "lodash.isplainobject": "^4.0.6",
+    "lodash.min": "^4.0.1",
+    "rollbar": "^2.1.1",
+    "speakeasy": "^2.0.0"
+  },
+  "description": "Automate Liqui operations",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/timstott/liquid-automations"
+  },
+  "devDependencies": {
+    "eslint": "^4.4.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base"
+  },
+  "scripts": {
+    "lint": "eslint src/**/*.js"
+  }
+}
