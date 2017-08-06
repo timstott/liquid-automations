@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/source
+    docker:
+      - image: node:6.10.3-slim
+    environment:
+      - NODE_ENV: test
+    steps:
+      - checkout
+      - restore_cache:
+          key: yarnlock-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run: yarn install --pure-lockfile
+      - save_cache:
+          key: yarnlock-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - "node_modules"
+      - run: yarn lint
