@@ -7,9 +7,7 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   role: arn:aws:iam::860963740950:role/${self:service}-${opt:stage}-runtime
-  environment:
-    NODE_ENV: ${opt:stage}
-    LOG_LEVEL: info
+  environment: ${file(envs.yml):${opt:stage}}
   stackTags:
     project: liquid-automations
     stage: ${opt:stage}
