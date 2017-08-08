@@ -16,7 +16,7 @@ provider:
 
 functions:
   helloWorld:
-    handler: src/handlers.helloWorld
+    handler: dist/handlers.helloWorld
     timeout: 60
     memorySize: 128
     events:

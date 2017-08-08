@@ -16,3 +16,4 @@ jobs:
           paths:
             - "node_modules"
       - run: yarn lint
+      - run: yarn build

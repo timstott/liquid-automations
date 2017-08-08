@@ -8,7 +8,7 @@
     "lodash.floor": "^4.0.4",
     "lodash.isplainobject": "^4.0.6",
     "lodash.min": "^4.0.1",
-    "rollbar": "^2.1.1",
+    "rollbar": "^2.1.3",
     "speakeasy": "^2.0.0"
   },
   "description": "Automate Liqui operations",
@@ -20,12 +20,14 @@
     "eslint": "^4.4.0",
     "eslint-config-airbnb-base": "^11.3.1",
     "eslint-plugin-import": "^2.7.0",
-    "serverless": "^1.19.0"
+    "serverless": "^1.19.0",
+    "typescript": "^2.4.2"
   },
   "eslintConfig": {
     "extends": "airbnb-base"
   },
   "scripts": {
-    "lint": "eslint src/**/*.js"
+    "lint": "eslint src/**/*.js",
+    "build": "tsc"
   }
 }
