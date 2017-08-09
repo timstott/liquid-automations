@@ -4,6 +4,7 @@ import * as Rollbar from "rollbar";
 import { totp } from "speakeasy";
 import { envs, initializeRollbar } from "./config";
 import { decrypt } from "./kms";
+import { logger } from "./logger";
 
 const PRECISION = 4;
 
@@ -101,7 +102,7 @@ const startEarning = async ({ currencyId, rollbar, userInterestLimitAmount }: IC
   // invest 10
   const amount = min([userAvailableAmount, exchangeAvailableAmount]);
 
-  console.log(`User amount to invest ${amount}`);
+  logger.info(`User amount to invest ${amount}`);
   rollbar.info(`User amount to invest ${amount}`);
 
   return liqui.post("/Interest/Create", {
@@ -115,7 +116,7 @@ const peekAvailability = async ({ currencyId, rollbar }: IConfig) => {
 
   if (amount <= 0) { throw new Error("ExchangeMaxAmountReached"); }
 
-  console.log(`Exchange current amount available to invest ${amount}`);
+  logger.info(`Exchange current amount available to invest ${amount}`);
   rollbar.info(`Exchange current amount available to invest ${amount}`);
 };
 
@@ -137,7 +138,7 @@ const startEarningHandler = async (event: any, _context: any, callback: any) => 
     await startEarning(config);
   } catch (error) {
     if (error.message === "ExchangeMaxAmountReached") {
-      console.log("Exchange max amount reached");
+      logger.info("Exchange max amount reached");
       rollbar.debug("Exchange max amount reached");
     } else {
       rollbar.error(error, null, { meta: JSON.stringify(error.meta) });
