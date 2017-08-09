@@ -15,11 +15,14 @@ provider:
     name: ${self:service}-${opt:stage}-deployments
 
 functions:
-  helloWorld:
-    handler: dist/handlers.helloWorld
+  startEarning:
+    handler: dist/handlers.startEarningHandler
     timeout: 60
     memorySize: 128
     events:
       - schedule:
           rate: rate(3 minutes)
           enabled: true
+          input:
+            currencyId: 12
+            userInterestLimitAmount: 0.5
