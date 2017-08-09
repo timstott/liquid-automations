@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import { find, floor, isPlainObject, min } from "lodash";
 import * as Rollbar from "rollbar";
 import { totp } from "speakeasy";
-import { envs, initializeRollbar } from "./config";
-import { decrypt } from "./kms";
+import { initializeRollbar } from "./config";
+import { decryptEnv } from "./kms";
 import { logger } from "./logger";
 
 const PRECISION = 4;
@@ -46,15 +46,15 @@ liqui.interceptors.response.use(rejectErroneousResponse, Promise.reject);
 
 const authenticate = async () =>
   liqui.post("/User/Login", {
-    login: await decrypt(envs.LIQUI_LOGIN),
-    password: await decrypt(envs.LIQUI_PASSWORD),
+    login: await decryptEnv("LIQUI_LOGIN"),
+    password: await decryptEnv("LIQUI_PASSWORD"),
   });
 
 const activateSession = async ({ data }: AxiosResponse) => {
   const { Value: { Session: { SessionKey } } } = data;
   const token = totp({
     encoding: "hex",
-    secret: await decrypt(envs.LIQUI_OTP_SECRET),
+    secret: await decryptEnv("LIQUI_OTP_SECRET"),
   });
 
   return liqui
