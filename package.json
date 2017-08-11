@@ -7,6 +7,7 @@
     "lodash": "^4.17.4",
     "rollbar": "https://github.com/rollbar/rollbar.js.git#master",
     "speakeasy": "^2.0.0",
+    "tslib": "^1.7.1",
     "winston": "^2.3.1"
   },
   "description": "Automate Liqui operations",
@@ -23,7 +24,6 @@
     "@types/winston": "^2.3.4",
     "aws-sdk": "^2.94.0",
     "serverless": "^1.19.0",
-    "tslib": "^1.7.1",
     "tslint": "^5.6.0",
     "typescript": "^2.4.2"
   },
