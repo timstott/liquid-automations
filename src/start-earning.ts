@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import { Callback, Context } from "aws-lambda";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { find, floor, isPlainObject, min } from "lodash";
 import * as Rollbar from "rollbar";
 import { totp } from "speakeasy";
@@ -15,10 +16,11 @@ interface IConfig {
 }
 
 const LIQUI_BASE = "https://liqui.io";
+const LIQUI_TIMEOUT = 10000;
 
 const liqui = axios.create({
   baseURL: LIQUI_BASE,
-  timeout: 10000,
+  timeout: LIQUI_TIMEOUT,
 });
 
 const makeError = (message: string, meta?: any) => {
@@ -27,6 +29,17 @@ const makeError = (message: string, meta?: any) => {
     return Object.assign({}, err, { meta});
   }
   return err;
+};
+
+const requestLogger = (request: AxiosRequestConfig) => (
+  logger.silly(`${request.method.toUpperCase()} ${request.url}`),
+  request
+);
+
+const responseLogger = (response: AxiosResponse) => {
+  const { config: { method, url }, status } = response;
+  logger.debug(`${method.toUpperCase()} ${url} ${status}`);
+  return response;
 };
 
 // Reject responses with logical errors in addition to responses with
@@ -42,7 +55,12 @@ const rejectErroneousResponse = (response: AxiosResponse) => {
   return response;
 };
 
-liqui.interceptors.response.use(rejectErroneousResponse, Promise.reject);
+const rejectAsLiquiError = ({ message }: Error) =>
+  Promise.reject({ name: "LiquiError", message});
+
+liqui.interceptors.response.use(rejectErroneousResponse, rejectAsLiquiError);
+liqui.interceptors.request.use(requestLogger);
+liqui.interceptors.response.use(responseLogger);
 
 const authenticate = async () =>
   liqui.post("/User/Login", {
@@ -120,7 +138,8 @@ const peekAvailability = async ({ currencyId, rollbar }: IConfig) => {
   rollbar.info(`Exchange current amount available to invest ${amount}`);
 };
 
-const startEarningHandler = async (event: any, _context: any, callback: any) => {
+const startEarningHandler = async (event: any, context: Context, callback: Callback) => {
+  logger.rewriters.push((_level, _msg, meta: any) => ({meta, awsRequestId: context.awsRequestId}));
   const { currencyId, userInterestLimitAmount } = event;
 
   const config = {
@@ -137,10 +156,15 @@ const startEarningHandler = async (event: any, _context: any, callback: any) => 
 
     await startEarning(config);
   } catch (error) {
-    if (error.message === "ExchangeMaxAmountReached") {
+    const { name, message } = error;
+    if (message === "ExchangeMaxAmountReached") {
       logger.info("Exchange max amount reached");
       rollbar.debug("Exchange max amount reached");
+    } else if (name === "LiquiError") {
+      logger.info(message);
+      rollbar.info(message);
     } else {
+      logger.error(`${name}: ${message}`);
       rollbar.error(error, null, { meta: JSON.stringify(error.meta) });
     }
   }
