@@ -1,5 +1,5 @@
 common: &common
-  GIT_REF: abc123
+  GIT_SHA: ${file(version.js):version}
 
 dev:
   <<: *common
