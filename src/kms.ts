@@ -1,6 +1,11 @@
+import * as AWS from "aws-sdk";
 import * as KMS from "aws-sdk/clients/kms";
 import { ceil, isEmpty, isString } from "lodash";
 import { logger } from "./logger";
+
+if (process.env.IS_LOCAL) {
+  AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: process.env.AWS_PROFILE });
+}
 
 const client = new KMS();
 
