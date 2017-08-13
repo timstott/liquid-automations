@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/source
     docker:
-      - image: node:6.10.3-slim
+      - image: circleci/node:6.10.3
     environment:
       - NODE_ENV: test
     steps:
